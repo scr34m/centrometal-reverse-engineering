@@ -2,19 +2,91 @@
 
 Messages starting with 0xBB and ending 0xEE byte
 
-Message structure:
+Message structure in general:
 - 0 2 action
 - 2 1 length
-- 3 4 CRC32
+- 3 4 CRC32 - usage indicated separatedly
 - 7 1 type
 - 8 n data
-- 2 2 frame checksum
+- n 2 frame checksum
 
 Response message header structure is the same, but CRC32 is calculated with the requesting message length, extra data is filled with zero on calculation.
 
-Command bytes
-- 0x80 0x71 request
-- 0x71 0x80 response
+Action bytes
+- 0x80 0x00 motherboard request
+- 0x00 0x80 motherboard response
+- 0x80 0x71 wifi box request
+- 0x71 0x80 wifi box response
+
+## Motherboard packets
+
+- 0 2 action - 0x80 0x00
+- 2 1 type
+- 3 1 GPIO control hi byte
+- 4 1 GPIO control lo byte
+- 5 1 RPM hi byte
+- 5 1 RPM lo byte
+
+### Request 7 - Controller query ADC values for all channel
+
+### Response 7
+
+-  0  2 0x00 0x80
+-  2  1 7
+-  3  1 0x81
+-  4 32 ADC records for 16 value in hi / lo format
+- 36  1 RPM default hi byte
+- 37  1 RPM defult lo byte
+
+### Request 8 - Controller query ADC values for first 4 channel
+
+### Response 8
+
+-  0 2 0x00 0x80
+-  2 1 8
+-  3 1 0x81
+-  4 8 ADC records for 4 value in hi / lo format
+- 10 1 RPM default hi byte
+- 11 1 RPM defult lo byte
+
+### Request 9 - Controller query ADC values for second 4 channel
+
+### Response 9
+
+-  0 2 0x00 0x80
+-  2 1 9
+-  3 1 0x81
+-  4 8 records for 4 value in hi / lo format
+
+### Request 10 - Controller query ADC values for third 4 channel
+
+### Response 10
+
+-  0 2 0x00 0x80
+-  2 1 10
+-  3 1 0x81
+-  4 8 records for 4 value in hi / lo format
+
+### Request 11 - Controller query ADC values for fourth 4 channel
+
+### Response 11
+
+-  0 2 0x00 0x80
+-  2 1 11
+-  3 1 0x81
+-  4 8 records for 4 value in hi / lo format
+
+### Request 12
+
+### Response 12 - packet length 29
+
+TODO
+
+### Response 12 - packet length not 29
+
+TODO
+
+## Wifi box packets
 
 ### Request 0x0A - Boiler send data
 
