@@ -119,7 +119,7 @@ sequence numbers observed:
 - 10 n data
 
 sequence numbers observed:
-0 {1 0 409 409 409 409 OFF 0 10} - {1 B_Tk1 B_Tak1 B_Tak2 ? ? B_STATE *state* 10}
+0 {1 0 409 409 409 409 OFF 0 10}
 1 {1 23 409 409 409 409 OFF 0 10}
 2 {2 0 80000000}
 3 {2 0 80000000}
