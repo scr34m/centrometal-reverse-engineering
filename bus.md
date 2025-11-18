@@ -27,6 +27,10 @@ Action bytes
 - 5 1 RPM hi byte
 - 5 1 RPM lo byte
 
+ In type poistion, only value 7 is monitored, but by the firmware there are more:
+ - 8, 9, 10, 11 for ADC query in 4 channels
+ - and 12
+
 ### Request 7 - Controller query ADC values for all channel
 
 ### Response 7
@@ -38,54 +42,6 @@ Action bytes
 - 36  1 RPM default hi byte
 - 37  1 RPM defult lo byte
 
-### Request 8 - Controller query ADC values for first 4 channel
-
-### Response 8
-
--  0 2 0x00 0x80
--  2 1 8
--  3 1 0x81
--  4 8 ADC records for 4 value in hi / lo format
-- 10 1 RPM default hi byte
-- 11 1 RPM defult lo byte
-
-### Request 9 - Controller query ADC values for second 4 channel
-
-### Response 9
-
--  0 2 0x00 0x80
--  2 1 9
--  3 1 0x81
--  4 8 records for 4 value in hi / lo format
-
-### Request 10 - Controller query ADC values for third 4 channel
-
-### Response 10
-
--  0 2 0x00 0x80
--  2 1 10
--  3 1 0x81
--  4 8 records for 4 value in hi / lo format
-
-### Request 11 - Controller query ADC values for fourth 4 channel
-
-### Response 11
-
--  0 2 0x00 0x80
--  2 1 11
--  3 1 0x81
--  4 8 records for 4 value in hi / lo format
-
-### Request 12
-
-### Response 12 - packet length 29
-
-TODO
-
-### Response 12 - packet length not 29
-
-TODO
-
 ## Wifi box packets
 
 ### Request 0x0A - Boiler send data
@@ -96,7 +52,6 @@ TODO
 - 7 1 0xa
 - 8 2 seq number
 - 10 n data
-- 2 2 frame checksum
 
 sequence numbers observed:
 0 `{~ITYPE":2}`
@@ -139,7 +94,6 @@ sequence numbers observed:
 - 3 4 CRC32
 - 7 1 0xa
 - 8 2 seq number
-- 2 2 frame checksum
 
 ### Response 0x0B
 
@@ -163,10 +117,9 @@ sequence numbers observed:
 - 7 1 0xc
 - 8 2 seq number
 - 10 n data
-- 2 2 frame checksum
 
 sequence numbers observed:
-0 {1 0 409 409 409 409 OFF 0 10}
+0 {1 0 409 409 409 409 OFF 0 10} - {1 B_Tk1 B_Tak1 B_Tak2 ? ? B_STATE *state* 10}
 1 {1 23 409 409 409 409 OFF 0 10}
 2 {2 0 80000000}
 3 {2 0 80000000}
@@ -188,7 +141,6 @@ sequence numbers observed:
 - 3 4 CRC32
 - 7 1 0xa
 - 8 2 seq number
-- 2 2 frame checksum
 
 sequence numbers observed: 0, 2, 3, 4
 

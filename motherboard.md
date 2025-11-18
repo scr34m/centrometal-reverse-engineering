@@ -20,3 +20,7 @@
 Chip communication
 - PA14 - SWCLK
 - PA13 - CWDIO
+
+### Resources
+
+- https://github.com/STMicroelectronics/stm32g0xx-hal-driver
