@@ -138,23 +138,23 @@ def crc32_calculate(dst: bytearray, length: int):
   write_int_to_dst(rc, dst, 3)
   return dst
 
-def packet_read_linear(dst_buffer, src_buffer, length_ref):
+def packet_read_linear(src, dst, length_ref):
     start_index = 0
     read_index = 1
-    buffer_len = len(dst_buffer)
+    buffer_len = len(src)
 
     length_ref[0] = 0
 
     while True:
-        if read_index == start_index or (dst_buffer[read_index] >> 1) == 0x66:
+        if read_index == start_index or (src[read_index] >> 1) == 0x66:
             return 3
 
-        if dst_buffer[read_index] == 0xAA:
+        if src[read_index] == 0xAA:
             read_index += 1
             if read_index >= buffer_len:
                 return 3
 
-            esc_byte = dst_buffer[read_index]
+            esc_byte = src[read_index]
             if esc_byte == 0x00:
                 decoded_byte = 0xBB
             elif esc_byte == 0x01:
@@ -168,9 +168,9 @@ def packet_read_linear(dst_buffer, src_buffer, length_ref):
             else:
                 decoded_byte = esc_byte
         else:
-            decoded_byte = dst_buffer[read_index]
+            decoded_byte = src[read_index]
 
-        src_buffer.append(decoded_byte)
+        dst.append(decoded_byte)
         length_ref[0] += 1
 
         read_index += 1
