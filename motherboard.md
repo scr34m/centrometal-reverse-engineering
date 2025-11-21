@@ -21,6 +21,27 @@ Chip communication
 - PA14 - SWCLK
 - PA13 - CWDIO
 
+Serial
+- PD5 - USART2_TX
+- PD6 - USART2_RX
+
+RS485 reading
+- PA10 - USART1_RX
+- PA9 - USART1_TX
+
+## Serial
+
+Serial commands: 
+ - pid1
+ - pid
+ - info
+ - out
+ - in
+ - adc
+ - fw
+ - sp
+ - wdg
+
 ### Resources
 
 - https://github.com/STMicroelectronics/stm32g0xx-hal-driver
