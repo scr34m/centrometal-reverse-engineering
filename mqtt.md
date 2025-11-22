@@ -1,6 +1,6 @@
 # MQTT
 
-IP is used for connection: portal.centrometal.hr (176.9.123.173) and port 1883
+IP is used for connection: portal.centrometal.hr (136.243.62.164, old address was 176.9.123.173) and port 1883
 Connection username and client id is the same `4EED90D0` and password `BTRG98xV`
 On wifi connections it will subscribe to: cm.srv.cmpelet.4EED90D0
 

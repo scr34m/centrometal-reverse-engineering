@@ -2,6 +2,7 @@
 
 - MOC3082, MOC3063 - Zero-Cross Triac Driver Optocoupler
 - STM32G070RBT6
+- 74HC14D
 
 ## STM32G070RBT6 Memory map
 
@@ -32,27 +33,63 @@ RS485 reading
 - PA10 - USART1_RX
 - PA9 - USART1_TX
 
-GPIOs (triac numbers counted from line in):
-- PB13 SET (1), 1 → PB13 RESET (0): Triac 9 OT1
-- PB14 SET, 0 → PB14 RESET: 
-- PB15 SET, 0 → PB15 RESET: Triac 8 ON4, Triac 7 OT7
-- PC6 SET, 0 → PC6 RESET: Triac 6 OT2
-- PC8 SET, 0 → PC8 RESET: Triac 5 OT5
-- PD9 SET, 0 → PD9 RESET: Triac 4 OT9
-- PD8 SET, 0 → PD8 RESET: Triac 3 OT3
-- PD2 SET, 0 → PD2 RESET: Triac 10 OT13
-- PD3 SET, 0 → PD3 RESET: 
-- PD4 SET, 0 → PD4 RESET: 
-- PD5 SET, 0 → PD5 RESET: 
-- PB3 SET, 0 → PB3 RESET: Triac 2 OT6
-- PB7 SET, 0 → PB7 RESET: 
-- PB5 SET, 0 → PB5 RESET: 
+GPIOs:
+- PB13 SET (1), 1 → PB13 RESET (0): 9/OT1
+- PB14 SET, 0 → PB14 RESET: 8/OT4
+- PB15 SET, 0 → PB15 RESET: 7/OT7
+- PC6 SET, 0 → PC6 RESET: 6/OT2
+- PC8 SET, 0 → PC8 RESET: 5/OT5
+- PD9 SET, 0 → PD9 RESET: 4/OT9
+- PD8 SET, 0 → PD8 RESET: 3/OT3
+- PD2 SET, 0 → PD2 RESET: 13/OT14
+- PD3 SET, 0 → PD3 RESET: 12/OT12
+- PD4 SET, 0 → PD4 RESET: 11/OT11
+- PD5 SET, 0 → PD5 RESET: USART2_TX
+- PB3 SET, 0 → PB3 RESET: 2/OT6
+- PB7 SET, 0 → PB7 RESET: EXT1/1
+- PB5 SET, 0 → PB5 RESET: EXT1/2
+
+MVAL1: OT14, OT12
+MVAL2: OT13, OT11
+PUMPS1: OT1, OT4, OT7
+PUMPS2: OT2, OT5
+SDCREW: OT9
+BURNER1: OT6, OT3
+STB: OT0 
+
+IC6
+- pin 1, (mark 5) 10/OT13
+
+IC8
+- pin 1
+- pin 2
+- pin 3
+- pin 4, connected to pin 5 
+- pin 5
+- pin 6, PB6
+- pin 13
+- pin 12
+- pin 11
+- pin 10, OT0
+- pin 9
+- pin 8
+
+Burner2:
+- GND -
+- 5V -
+- RPM -
+- PHOTO - mark 7
+- PRESS - mark 8
+- CMSR50 - mark 3
 
 Misc:
+- PB5 - EXT1/2
+- PB7 - EXT1/1
 - PB9 - EXT2 IN
-
-Key:
-- PC5
+- PC5 - Key
+- PA11 - STB
+- PA15 - LED 1
+- PB4 - LED 2
 
 TEMP1:
 - PB10 - Boiler
