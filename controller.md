@@ -1,6 +1,7 @@
 # Controller reverse engineering
 
-S29GL06AN90TFI03
+- S29GL06AN90TFI03
+- STM32F103ZFT6
 
 ## STM32F103ZFT6 Memory map
 
