@@ -205,3 +205,141 @@ def generate_token(length=20, seed=None):
     if seed is not None:
         random.seed(seed)
     return ''.join(random.choice(token_charset) for _ in range(length))
+
+import struct
+from PIL import Image
+import struct
+
+FLASH_BASE = 0x64010000
+FLASH_FILE_OFFSET = 0x10000
+ENTRY_SIZE = 0x20
+
+class FlashFS:
+    def __init__(self, filename):
+        with open(filename, "rb") as f:
+            self.data = f.read()
+        self.base_offset = FLASH_FILE_OFFSET
+
+    def _read_entry(self, offset):
+        entry_data = self.data[offset:offset+ENTRY_SIZE]
+        if len(entry_data) < ENTRY_SIZE:
+            return None
+        name = entry_data[:0x10].split(b'\x00', 1)[0].decode('ascii', errors="ignore")
+        ext  = entry_data[0x10:0x14].split(b'\x00', 1)[0].decode('ascii', errors="ignore")
+        entry_type = struct.unpack_from('<I', entry_data, 0x14)[0]
+        entry_offset = struct.unpack_from('<I', entry_data, 0x18)[0]
+        length = struct.unpack_from('<I', entry_data, 0x1C)[0]
+        return {"name": name, "ext": ext, "type": entry_type, "offset": entry_offset, "length": length}
+
+    def lookup_subdir(self, name, table_offset):
+        idx = 0
+        while True:
+            entry_offset = table_offset + idx * ENTRY_SIZE
+            entry = self._read_entry(entry_offset)
+            if not entry or entry["name"].startswith('?'):
+                return 0
+            if entry["type"] == 1 and entry["name"].upper() == name.upper():
+                return entry["offset"] + FLASH_BASE
+            idx += 1
+
+    def lookup_dir(self, path, start_offset=FLASH_BASE):
+        if path.startswith('\\'):
+            start_offset = FLASH_BASE
+            path = path[1:]
+        components = path.split('\\')
+        current_offset = start_offset
+        for comp in components:
+            if not comp:
+                continue
+            current_offset = self.lookup_subdir(comp, current_offset - FLASH_BASE + self.base_offset)
+            if current_offset == 0:
+                return 0
+        return current_offset
+
+    def list_dir(self, dir_offset):
+        directories = []
+        files = []
+        idx = 0
+        table_offset = dir_offset - FLASH_BASE + self.base_offset
+        while True:
+            entry_offset = table_offset + idx * ENTRY_SIZE
+            entry = self._read_entry(entry_offset)
+            if not entry or entry["name"].startswith('?'):
+                break
+            if entry["type"] == 1:
+                directories.append(entry["name"])
+            else:
+                full_name = entry["name"]
+                if entry["ext"]:
+                    full_name += '.' + entry["ext"]
+                files.append({
+                    'name': full_name,
+                    'offset': entry["offset"] + FLASH_BASE,
+                    'length': entry["length"]
+                })
+            idx += 1
+        return directories, files
+
+    def lookup_file(self, full_path):
+        full_path = full_path.lstrip('\\')
+        if '\\' in full_path:
+            last_slash = full_path.rfind('\\')
+            dir_path = full_path[:last_slash]
+            file_name = full_path[last_slash+1:]
+        else:
+            dir_path = ''
+            file_name = full_path
+
+        if dir_path:
+            dir_offset = self.lookup_dir('\\' + dir_path)
+        else:
+            dir_offset = FLASH_BASE
+
+        if dir_offset == 0:
+            print(f"Directory '{dir_path}' not found")
+            return 0, 0
+
+        idx = 0
+        table_offset = dir_offset - FLASH_BASE + self.base_offset
+        while True:
+            offset = table_offset + idx * ENTRY_SIZE
+            entry = self._read_entry(offset)
+            if not entry or entry["name"].startswith('?'):
+                print(f"Can't open file: {file_name}")
+                return 0, 0
+            full_name = entry["name"]
+            if entry["ext"]:
+                full_name += '.' + entry["ext"]
+            if full_name.upper() == file_name.upper():
+                return entry["offset"] + FLASH_BASE, entry["length"]
+            idx += 1
+    
+    def read_file(self, file_offset, size):
+        table_offset = file_offset - FLASH_BASE + self.base_offset
+        return self.data[table_offset : table_offset + size]
+
+def ebm_rgb565(data):
+    width = struct.unpack_from("<H", data, 0)[0]
+    height = struct.unpack_from("<H", data, 2)[0]
+
+    pixel_data_offset = 16
+    pixel_bytes = data[pixel_data_offset:]
+
+    img = Image.new("RGB", (width, height))
+    pixels = img.load()
+
+    byte_index = 0
+    for y in range(height):
+        for x in range(width):
+            if byte_index + 1 >= len(pixel_bytes):
+                break
+            pixel = pixel_bytes[byte_index] | (pixel_bytes[byte_index + 1] << 8)
+            byte_index += 2
+
+            r = ((pixel >> 11) & 0x1F) * 255 // 31
+            g = ((pixel >> 5) & 0x3F) * 255 // 63
+            b = (pixel & 0x1F) * 255 // 31
+
+            pixels[x, y] = (r, g, b)
+
+    return img
