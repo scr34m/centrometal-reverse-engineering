@@ -20,27 +20,55 @@ Action bytes
 
 ## Motherboard packets
 
+### Request 0x07, 0x08, 0x09, 0x0A, 0x0B - Controller query ADC values
+
 - 0 2 action - 0x80 0x00
-- 2 1 type
+- 2 1 type - one of 0x07, 0x08, 0x09, 0x0A, 0x0B
 - 3 1 GPIO control hi byte
 - 4 1 GPIO control lo byte
 - 5 1 RPM hi byte
 - 5 1 RPM lo byte
 
- In type poistion, only value 7 is monitored, but by the firmware there are more:
- - 8, 9, 10, 11 for ADC query in 4 channels
- - and 12
+Possbile values in type are:
+ - 0x07 ADC query for 16 channels
+ - 0x08, 0x09, 0x0A, 0x0B for ADC query in 4 channels
 
-### Request 7 - Controller query ADC values for all channel
-
-### Response 7
+### Response 0x07, 0x08, 0x09, 0x0A, 0x0B
 
 -  0  2 0x00 0x80
--  2  1 7
--  3  1 0x81
--  4 32 ADC records for 16 value in hi / lo format
-- 36  1 RPM default hi byte
-- 37  1 RPM defult lo byte
+-  2  1 type was in request
+-  3  1 Digital record
+-  4 32 ADC records for 16 channels value in hi / lo format when 0x07
+-  4  8 ADC records for 0..3 channels value in hi / lo format when 0x08
+-  4  8 ADC records for 4..7 channels value in hi / lo format when 0x09
+-  4  8 ADC records for 8..11 channels value in hi / lo format when 0x0A
+-  4  8 ADC records for 12..15 channels value in hi / lo format when 0x0B
+- 36  1 RPM default hi byte, when 0x07
+- 37  1 RPM defult lo byte, when 0x07
+
+Digital record 4 bits used:
+- 0 PB8 - CMSR50
+- 1 PB9 - EXT2 IN
+- 2 ADC reading == 0
+- 7 PID received
+
+### Request 0x0C - Controller sends GPID
+
+- 0  2 action
+- 2  1 0x0C
+- 3 26 data ex.: 0x00 0x06 0x00 0x02 0x01 0x32 0x04 0x00 0x2c 0x01 0x14 0x00 0x32 0x00 0x58 0x1b 0x00 0x00 0x00 0x00 0x00 0x00 0x40 0xe7 0x08 0x46
+
+### Response 0x0C
+
+- 0  2 action
+- 2  1 0x0c
+- 3 26 response
+
+Response it:
+- 0   1 0x68
+- 1  17 request data 1..17 bytes
+- 18  4 firmware crc32 ex.: 0xdb 0x73 0x48 0xee
+- 22  4 crc32
 
 ## Wifi box packets
 
